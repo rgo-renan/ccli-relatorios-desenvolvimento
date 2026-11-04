@@ -1,0 +1,6 @@
+[build]
+  publish = "public"
+  command = "echo sem build"
+
+[functions]
+  node_bundler = "esbuild"
