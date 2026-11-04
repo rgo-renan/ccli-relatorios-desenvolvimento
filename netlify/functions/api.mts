@@ -24,7 +24,7 @@ export default async (req: Request, context: Context) => {
   const url = new URL(req.url);
   const rota = url.pathname.replace(/^\/api\//, "");
 
-  if (rota === "quemsou") return json({ papel: role, ia: !!Netlify.env.get("ANTHROPIC_API_KEY") });
+  if (rota === "quemsou") return json({ papel: role, ia: Netlify.env.get("REDACAO_IA") === "sim" && !!Netlify.env.get("ANTHROPIC_API_KEY") });
 
   if (rota === "doc") {
     const p = url.searchParams.get("p") || "";

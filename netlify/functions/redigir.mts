@@ -6,14 +6,14 @@ import type { Config } from "@netlify/functions";
 export default async (req: Request) => {
   const k = req.headers.get("x-chave") || "";
   const ok = [Netlify.env.get("ADMIN_CHAVE"), Netlify.env.get("PAINEL_CHAVE")].filter(Boolean).includes(k);
-  if (!ok) return;
+  if (!ok || Netlify.env.get("REDACAO_IA") !== "sim") return;
   let job = "", prompt = "";
   try { ({ job, prompt } = await req.json()); } catch { return; }
   if (!/^[a-z0-9-]{8,64}$/.test(job) || typeof prompt !== "string" || prompt.length > 200_000) return;
   const jobs = getStore({ name: "jobs", consistency: "strong" });
   await jobs.setJSON(job, { status: "rodando", em: Date.now() });
   try {
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
+    const r = await fetch(`${(Netlify.env.get("ANTHROPIC_BASE_URL") || "https://api.anthropic.com").replace(/\/$/, "")}/v1/messages`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
