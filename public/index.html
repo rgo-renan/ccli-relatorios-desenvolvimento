@@ -95,7 +95,7 @@ td.nm small{display:block;color:var(--mut);font-size:11.5px}
 .meter i.mid{background:var(--warn)}
 .meter i.low{background:var(--bad)}
 .actbar{position:fixed;left:0;right:0;bottom:0;background:var(--teal);color:var(--teal-ink);z-index:20;padding-bottom:env(safe-area-inset-bottom,0px)}
-.actbar .wrap{padding-block:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.actbar .wrap{padding-block:12px;padding-right:max(190px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .empty{padding:48px 20px;text-align:center;color:var(--mut)}
 .empty h2{font-family:var(--f-disp);color:var(--ink);font-size:20px;margin:0 0 6px}
 .note{border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.5}
@@ -130,6 +130,9 @@ details.tx summary{cursor:pointer;font-weight:600;font-size:13px;padding:4px 0}
 #offscreen{position:fixed;left:-12000px;top:0;width:794px}
 @media (max-width:900px){.ed{grid-template-columns:1fr}.prev{position:static}}
 @media (max-width:520px){.grid2{grid-template-columns:1fr}.brand h1{font-size:17px}}
+
+@media (max-width:640px){.actbar .wrap{padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:52px}}
+main{padding-bottom:120px}
 </style>
 <style id="report-css">/* ===== Relatório A4 (documento: tema fixo claro) ===== */
 .rp{--r-teal:#154843;--r-teal2:#1d5a53;--r-mint:#45b89b;--r-mint2:#e2f3ed;--r-mint3:#c9e9df;--r-or:#e8946a;--r-or2:#fcebe1;--r-cream:#f8f6f1;--r-ink:#1e2a29;--r-mut:#6c7876;--r-line:#e7e3db;--r-card:#ffffff;
@@ -1025,7 +1028,7 @@ if (typeof module !== 'undefined') module.exports = REP;
 
   const S = {
     raw: {gestao: null, freq: null, forms: null}, meta: null, B: null,
-    seg: 'Todos', q: '', cons: '', idioma: '', ref: HOJE.slice(0, 7), soTri: false, soPend: false, sort: 'nome',
+    seg: 'Todos', q: '', cons: '', idioma: '', ref: HOJE.slice(0, 7), soResp: false, soPend: false, sort: 'nome',
     sel: new Set(), view: 'list', queue: [], qi: 0, relidx: {},
     db: null, user: null, sample: null, downloads: null, canUpload: true, uploadOpen: false,
     pending: {}, ed: null,
@@ -1144,7 +1147,7 @@ if (typeof module !== 'undefined') module.exports = REP;
       (!S.cons || a.consList.includes(S.cons)) &&
       (!S.idioma || a.id === S.idioma) &&
       (!q || E.norm(a.n + ' ' + a.emp + ' ' + a.c).includes(q)) &&
-      (!S.soTri || E.trimestre(a.ini, S.ref)) &&
+      (!S.soResp || !!a.ultimoForm) &&
       (!S.soPend || !a.formOk));
     const by = {nome: (a, b) => a.n.localeCompare(b.n), ltv: (a, b) => b.ltv - a.ltv, ini: (a, b) => (a.ini || '').localeCompare(b.ini || ''), pres: (a, b) => (a.presAno ?? 2) - (b.presAno ?? 2)}[S.sort];
     return l.sort(by);
@@ -1174,7 +1177,7 @@ if (typeof module !== 'undefined') module.exports = REP;
     </div>
     <div class="filters">
       <label class="field"><span>Mês de referência do trimestre</span><select id="f-ref">${refOpts.map(m => `<option value="${m}" ${S.ref === m ? 'selected' : ''}>${E.ymLabel(m, true)}</option>`).join('')}</select></label>
-      <label class="chk"><input type="checkbox" id="f-tri" ${S.soTri ? 'checked' : ''}> Só quem fecha trimestre em ${refL}</label>
+      <label class="chk"><input type="checkbox" id="f-resp" ${S.soResp ? 'checked' : ''}> Forms respondido</label>
       <label class="chk"><input type="checkbox" id="f-pend" ${S.soPend ? 'checked' : ''}> Só com forms pendente</label>
     </div>
     <div class="summary">
@@ -1459,7 +1462,7 @@ if (typeof module !== 'undefined') module.exports = REP;
     else if (t.id === 'f-cons') { S.cons = t.value; renderList(); }
     else if (t.id === 'f-id') { S.idioma = t.value; renderList(); }
     else if (t.id === 'f-ref') { S.ref = t.value; renderList(); }
-    else if (t.id === 'f-tri') { S.soTri = t.checked; renderList(); }
+    else if (t.id === 'f-resp') { S.soResp = t.checked; renderList(); }
     else if (t.id === 'f-pend') { S.soPend = t.checked; renderList(); }
     else if (t.dataset.inp && S.ed) {
       S.ed.inp[t.dataset.inp] = t.value;
