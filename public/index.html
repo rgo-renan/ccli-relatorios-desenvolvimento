@@ -157,6 +157,14 @@ details.tx summary{display:flex;justify-content:space-between;align-items:center
 details.tx summary::-webkit-details-marker{display:none}
 details.tx summary:after{content:"Mostrar";font-size:11.5px;font-weight:500;color:var(--mint)}
 details.tx[open] summary:after{content:"Ocultar"}
+.mock{background:var(--orange-soft);border-radius:10px;padding:10px 12px;display:grid;gap:5px;font-size:12px;color:var(--ink)}
+.mock .mk-t{font-family:var(--f-disp);font-weight:700;font-size:12.5px}
+.mock .mk-p,.mock .mk-l{display:flex;gap:7px;align-items:flex-start;line-height:1.4}
+.mock .mk-l{padding-left:14px;color:var(--mut)}
+.num{flex:none;width:18px;height:18px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:700;display:inline-grid;place-items:center;line-height:1}
+.sub{display:grid;gap:6px;margin-top:4px}
+.sub2{margin-left:9px;padding-left:14px;border-left:2px solid var(--orange)}
+.lbl{display:inline-flex;gap:7px;align-items:center}
 .dl-msg{font-size:12.5px;margin:8px 0 0;color:var(--orange);font-weight:500}
 
 @media (max-width:900px){.ed{grid-template-columns:1fr}.prev{position:static}}
@@ -1478,19 +1486,28 @@ if (typeof module !== 'undefined') module.exports = REP;
       <p class="hint" style="margin-top:-4px">Estes três campos são escritos pelo consultor e aparecem no relatório que ${c.voce ? 'o aluno recebe' : c.inp.audiencia === 'rh' ? 'a empresa recebe' : 'a família recebe'}. Sem eles, o download fica bloqueado.</p>
       <div class="rq">
         <div class="rq-h"><b>Sua fala sobre ${quem}</b><span class="st no" data-st="olhar.citacoes">Obrigatório</span></div>
-        <p class="hint">Uma ou duas frases suas, como você diria ${c.voce ? 'ao próprio aluno' : c.inp.audiencia === 'rh' ? 'ao RH' : 'à família'}: o que você vê de evolução e do que se orgulha nele(a). Uma frase por linha.</p>
+        <p class="hint">Uma ou duas frases suas, como você diria ${c.voce ? 'ao próprio aluno' : c.inp.audiencia === 'rh' ? 'ao RH' : 'à família'}: o que você vê de evolução e do que se orgulha nele(a).</p>
         <textarea id="tx-olhar.citacoes" data-tx="olhar.citacoes" rows="3" placeholder="Ex.: A ${esc(c.nome1)} chega sempre com curiosidade e hoje já conta histórias inteiras em inglês, com começo, meio e fim.">${esc((T.olhar?.citacoes || []).join('\n'))}</textarea>
         <div class="where">Aparece na página 3, entre aspas, assinada por ${esc(au.nome)}. <button type="button" data-act="ver" data-target="rp-olhar">Ver na prévia</button></div>
       </div>
       <div class="rq">
-        <div class="rq-h"><b>O que acelera a chegada · texto</b><span class="st no" data-st="acelera.texto">Obrigatório</span></div>
-        <p class="hint">Em 1 ou 2 frases, o que faria ${quem} avançar mais rápido agora. Tom de parceria, sem cobrança.</p>
-        <textarea id="tx-acelera.texto" data-tx="acelera.texto" rows="3" placeholder="Ex.: Nesta fase, a regularidade é o que mais acelera. Duas combinações ajudam muito:">${esc(T.acelera?.texto || '')}</textarea>
-      </div>
-      <div class="rq">
-        <div class="rq-h"><b>O que acelera a chegada · combinações</b><span class="st no" data-st="acelera.itens">Obrigatório</span></div>
-        <p class="hint">Duas ações práticas combinadas com ${c.voce ? 'o aluno' : c.inp.audiencia === 'rh' ? 'o aluno e a empresa' : 'a família'}. Uma por linha; cada linha vira um item da lista.</p>
-        <textarea id="tx-acelera.itens" data-tx="acelera.itens" rows="3" placeholder="Ex.: Avisar ${esc(R.first(au.nome))} assim que surgir um imprevisto, para a aula ser reagendada&#10;Reservar 15 minutos por semana para a prática entre as aulas">${esc((T.acelera?.itens || []).join('\n'))}</textarea>
+        <div class="rq-h"><b>O que acelera a chegada</b></div>
+        <p class="hint">É um quadro só, em duas partes: um texto de abertura e, logo abaixo dele, a lista de combinações que colocam esse texto em prática.</p>
+        <div class="mock" aria-hidden="true">
+          <div class="mk-t">${esc(T.acelera?.titulo || 'O que acelera a chegada')}</div>
+          <div class="mk-p"><span class="num">1</span>Texto de abertura: o que faria ${quem} avançar mais rápido agora…</div>
+          <div class="mk-l"><span class="num">2</span><span>→ Primeira combinação<br>→ Segunda combinação</span></div>
+        </div>
+        <div class="sub">
+          <div class="rq-h"><span class="lbl"><span class="num">1</span><b>Texto de abertura</b></span><span class="st no" data-st="acelera.texto">Obrigatório</span></div>
+          <p class="hint">Em 1 ou 2 frases, o que faria ${quem} avançar mais rápido agora. Tom de parceria, sem cobrança. Termine apresentando as combinações.</p>
+          <textarea id="tx-acelera.texto" data-tx="acelera.texto" rows="3" placeholder="Ex.: Nesta fase, a regularidade é o que mais acelera o avanço. Duas combinações ajudam muito:">${esc(T.acelera?.texto || '')}</textarea>
+        </div>
+        <div class="sub sub2">
+          <div class="rq-h"><span class="lbl"><span class="num">2</span><b>Combinações do texto acima</b></span><span class="st no" data-st="acelera.itens">Obrigatório</span></div>
+          <p class="hint">As ações práticas que completam o texto de abertura, combinadas com ${c.voce ? 'o aluno' : c.inp.audiencia === 'rh' ? 'o aluno e a empresa' : 'a família'}. Escreva duas, uma por linha: cada linha vira um item com seta logo abaixo do texto.</p>
+          <textarea id="tx-acelera.itens" data-tx="acelera.itens" rows="3" placeholder="Ex.: Avisar ${esc(R.first(au.nome))} assim que surgir um imprevisto, para a aula ser reagendada&#10;Reservar 15 minutos por semana para a prática entre as aulas">${esc((T.acelera?.itens || []).join('\n'))}</textarea>
+        </div>
         <div class="txf"><label for="tx-acelera.titulo">Título do quadro (pode manter)</label><input type="text" id="tx-acelera.titulo" data-tx="acelera.titulo" value="${esc(T.acelera?.titulo || '')}"></div>
         <div class="where">Aparece na página 4, no quadro laranja "O que acelera a chegada". <button type="button" data-act="ver" data-target="rp-acel">Ver na prévia</button></div>
       </div>
