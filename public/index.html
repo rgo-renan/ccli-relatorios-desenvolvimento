@@ -161,9 +161,9 @@ details.tx[open] summary:after{content:"Ocultar"}
 .mock .mk-t{font-family:var(--f-disp);font-weight:700;font-size:12.5px}
 .mock .mk-p,.mock .mk-l{display:flex;gap:7px;align-items:flex-start;line-height:1.4}
 .mock .mk-l{padding-left:14px;color:var(--mut)}
-.num{flex:none;width:18px;height:18px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:700;display:inline-grid;place-items:center;line-height:1}
-.sub{display:grid;gap:6px;margin-top:4px}
-.sub2{margin-left:9px;padding-left:14px;border-left:2px solid var(--orange)}
+.stepn{flex:none;width:18px;height:18px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:700;display:inline-grid;place-items:center;line-height:1}
+.rqsub{display:grid;gap:6px;margin-top:4px}
+.rqsub2{margin-left:9px;padding-left:14px;border-left:2px solid var(--orange)}
 .lbl{display:inline-flex;gap:7px;align-items:center}
 .dl-msg{font-size:12.5px;margin:8px 0 0;color:var(--orange);font-weight:500}
 
@@ -1495,16 +1495,16 @@ if (typeof module !== 'undefined') module.exports = REP;
         <p class="hint">É um quadro só, em duas partes: um texto de abertura e, logo abaixo dele, a lista de combinações que colocam esse texto em prática.</p>
         <div class="mock" aria-hidden="true">
           <div class="mk-t">${esc(T.acelera?.titulo || 'O que acelera a chegada')}</div>
-          <div class="mk-p"><span class="num">1</span>Texto de abertura: o que faria ${quem} avançar mais rápido agora…</div>
-          <div class="mk-l"><span class="num">2</span><span>→ Primeira combinação<br>→ Segunda combinação</span></div>
+          <div class="mk-p"><span class="stepn">1</span>Texto de abertura: o que faria ${quem} avançar mais rápido agora…</div>
+          <div class="mk-l"><span class="stepn">2</span><span>→ Primeira combinação<br>→ Segunda combinação</span></div>
         </div>
-        <div class="sub">
-          <div class="rq-h"><span class="lbl"><span class="num">1</span><b>Texto de abertura</b></span><span class="st no" data-st="acelera.texto">Obrigatório</span></div>
+        <div class="rqsub">
+          <div class="rq-h"><span class="lbl"><span class="stepn">1</span><b>Texto de abertura</b></span><span class="st no" data-st="acelera.texto">Obrigatório</span></div>
           <p class="hint">Em 1 ou 2 frases, o que faria ${quem} avançar mais rápido agora. Tom de parceria, sem cobrança. Termine apresentando as combinações.</p>
           <textarea id="tx-acelera.texto" data-tx="acelera.texto" rows="3" placeholder="Ex.: Nesta fase, a regularidade é o que mais acelera o avanço. Duas combinações ajudam muito:">${esc(T.acelera?.texto || '')}</textarea>
         </div>
-        <div class="sub sub2">
-          <div class="rq-h"><span class="lbl"><span class="num">2</span><b>Combinações do texto acima</b></span><span class="st no" data-st="acelera.itens">Obrigatório</span></div>
+        <div class="rqsub rqsub2">
+          <div class="rq-h"><span class="lbl"><span class="stepn">2</span><b>Combinações do texto acima</b></span><span class="st no" data-st="acelera.itens">Obrigatório</span></div>
           <p class="hint">As ações práticas que completam o texto de abertura, combinadas com ${c.voce ? 'o aluno' : c.inp.audiencia === 'rh' ? 'o aluno e a empresa' : 'a família'}. Escreva duas, uma por linha: cada linha vira um item com seta logo abaixo do texto.</p>
           <textarea id="tx-acelera.itens" data-tx="acelera.itens" rows="3" placeholder="Ex.: Avisar ${esc(R.first(au.nome))} assim que surgir um imprevisto, para a aula ser reagendada&#10;Reservar 15 minutos por semana para a prática entre as aulas">${esc((T.acelera?.itens || []).join('\n'))}</textarea>
         </div>
