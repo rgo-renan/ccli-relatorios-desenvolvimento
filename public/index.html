@@ -500,6 +500,7 @@ const ENG = (() => {
         emp: empresa,
         ini: isoDate(col(r,'Início'), XLSX), ter: isoDate(col(r,'Término'), XLSX),
         id: String(col(r,'Idioma') ?? '').trim(), nv: String(col(r,'Nível') ?? '').trim(),
+        ne: String(col(r,'Nível de entrada') ?? '').trim(), ee: String(col(r,'Etapa de entrada') ?? '').trim(),
         ltv: num(col(r,'LTV')), sg: segmentoDe(empresa),
       });
     }
@@ -1328,13 +1329,20 @@ if (typeof module !== 'undefined') module.exports = REP;
     const cons = a.consList[0] || a.c;
     const corp = /empresa/i.test(a.vi) || /corporativo/i.test(a.rf) || a.sg === 'Insigna';
     const nv = E.LV.includes(a.nv) ? a.nv : 'A1';
+    const entrada = partidaGestao(a);
     return {
-      partida: `${nv}.1`, atual: '', genero: R.guessGen(a.n), apelido: R.first(a.n),
+      partida: entrada || '', atual: '', genero: R.guessGen(a.n), apelido: R.first(a.n),
       audiencia: 'aluno', destinatario: '', consNome: cons, consGen: R.guessGen(cons) || 'f',
       cons2: a.consList[1] || '', cons2Gen: R.guessGen(a.consList[1] || '') || 'f',
       autorCit: autorDe(a), confirma: '', avaliada: '',
       timoneiro: timoneiroDe(cons), periodo: 'auto', obs: '', corp,
     };
+  }
+  // etapa de entrada vinda da Gestão (colunas "Etapa de entrada" / "Nível de entrada")
+  function partidaGestao(a) {
+    const e = R.parseStage(a.ee); if (e) return e;
+    const n = String(a.ne || '').toUpperCase().replace(/\s/g, '');
+    return E.LV.includes(n) ? `${n}.1` : '';
   }
   function autorDe(a) {
     const f = a.ultimoForm; if (!f || !f.cons || a.consList.length < 2) return a.consList[0] || a.c;
@@ -1383,7 +1391,9 @@ if (typeof module !== 'undefined') module.exports = REP;
     let saved = null;
     if (S.db) { try { const d = await S.db.doc('rel/' + a.slug).get(); if (d.exists) saved = d.data(); } catch {} }
     if (!saved) saved = lsGet('rel:' + a.slug);
-    S.ed = {a, inp: {...defaultsFor(a), ...(saved?.inp || {})}, T: saved?.T || null, savedAt: saved?.at || null, busy: false, err: '', open: new Set(['req'])};
+    const inp0 = {...defaultsFor(a), ...(saved?.inp || {})};
+    const pg = partidaGestao(a); if (pg) inp0.partida = pg;
+    S.ed = {a, inp: inp0, T: saved?.T || null, savedAt: saved?.at || null, busy: false, err: '', open: new Set(['req'])};
     normT(S.ed.T);
     renderAll(); window.scrollTo(0, 0);
   }
@@ -1412,9 +1422,9 @@ if (typeof module !== 'undefined') module.exports = REP;
       ? `<label class="field"><span>${label}</span><select id="${id}" data-inp="${id.slice(3)}">${stageOptions(a.id, val)}</select></label>`
       : `<label class="field"><span>${label}</span><input type="text" id="${id}" data-inp="${id.slice(3)}" placeholder="ex.: B1.4" value="${esc(val)}"></label>`;
     const etapaOk = R.parseStage(inp.atual) && (inp.confirma === 'sim' || (inp.confirma === 'nao' && R.parseStage(inp.avaliada)));
-    const ready = gate && etapaOk && inp.genero;
+    const ready = gate && etapaOk && inp.genero && R.parseStage(inp.partida);
     const dois = !!String(inp.cons2 || '').trim();
-    const pend = !gate ? 'Bloqueado até chegar a avaliação do consultor.' : !R.parseStage(inp.atual) ? 'Informe a etapa atual que aparece no Integra.' : !inp.confirma ? 'Responda se o consultor concorda com a etapa do Integra.' : !etapaOk ? 'Informe a etapa avaliada pelo consultor.' : !inp.genero ? 'Indique se é aluna ou aluno para os textos saírem com a concordância certa.' : '';
+    const pend = !gate ? 'Bloqueado até chegar a avaliação do consultor.' : !R.parseStage(inp.partida) ? 'Informe a etapa de entrada do aluno.' : !R.parseStage(inp.atual) ? 'Informe a etapa atual que aparece no Integra.' : !inp.confirma ? 'Responda se o consultor concorda com a etapa do Integra.' : !etapaOk ? 'Informe a etapa avaliada pelo consultor.' : !inp.genero ? 'Indique se é aluna ou aluno para os textos saírem com a concordância certa.' : '';
     const yScroll = window.scrollY;
     el.innerHTML = `<div class="ed">
       <div class="ed-side">
@@ -1427,7 +1437,7 @@ if (typeof module !== 'undefined') module.exports = REP;
         <div class="panel"><h3>1. Dados do relatório</h3>
           <div class="ed-sec">Etapa na rota</div>
           <div class="grid2">
-            ${stageField('in-partida', 'Etapa em que começou', inp.partida)}
+            <div class="field">${stageField('in-partida', 'Etapa de entrada', inp.partida)}<p class="hint">${partidaGestao(a) ? 'Vem da Gestão' + (a.ee && R.parseStage(a.ee) ? '' : ` (nível de entrada ${esc(a.ne)})`) + '. Ajuste só se estiver errada.' : a.ee || a.ne ? `Na Gestão: "${esc(a.ee || a.ne)}". Escolha a etapa.` : 'Sem etapa de entrada na Gestão. Escolha a etapa.'}</p></div>
             ${stageField('in-atual', 'Etapa atual no Integra', inp.atual)}
             <div class="field full"><span>O consultor concorda com a etapa do Integra?</span>
               <div class="seg2" role="radiogroup" aria-label="O consultor concorda com a etapa do Integra?">
