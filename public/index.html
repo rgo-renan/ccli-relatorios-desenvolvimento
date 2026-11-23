@@ -109,7 +109,8 @@ td.nm small{display:block;color:var(--mut);font-size:11.5px}
 .ed-side{display:grid;gap:12px}
 .ed-side .panel{padding:14px}
 .ed-side h3{font-family:var(--f-disp);font-size:14px;margin:0 0 10px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+.grid2>.field select,.grid2>.field input[type=text]{height:38px}
 .grid2 .full{grid-column:1/-1}
 .who-h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
 .who-h h2{font-family:var(--f-disp);font-size:18px;margin:0}
@@ -1437,8 +1438,9 @@ if (typeof module !== 'undefined') module.exports = REP;
         <div class="panel"><h3>1. Dados do relatório</h3>
           <div class="ed-sec">Etapa na rota</div>
           <div class="grid2">
-            <div class="field">${stageField('in-partida', 'Etapa de entrada', inp.partida)}<p class="hint">${partidaGestao(a) ? 'Vem da Gestão' + (a.ee && R.parseStage(a.ee) ? '' : ` (nível de entrada ${esc(a.ne)})`) + '. Ajuste só se estiver errada.' : a.ee || a.ne ? `Na Gestão: "${esc(a.ee || a.ne)}". Escolha a etapa.` : 'Sem etapa de entrada na Gestão. Escolha a etapa.'}</p></div>
+            ${stageField('in-partida', 'Etapa de entrada', inp.partida)}
             ${stageField('in-atual', 'Etapa atual no Integra', inp.atual)}
+            <p class="hint full" style="margin-top:-4px">Etapa de entrada: ${partidaGestao(a) ? 'vem da Gestão' + (a.ee && R.parseStage(a.ee) ? '' : ` (nível de entrada ${esc(a.ne)})`) + '. Ajuste só se estiver errada.' : a.ee || a.ne ? `na Gestão está "${esc(a.ee || a.ne)}". Escolha a etapa.` : 'sem informação na Gestão. Escolha a etapa.'}</p>
             <div class="field full"><span>O consultor concorda com a etapa do Integra?</span>
               <div class="seg2" role="radiogroup" aria-label="O consultor concorda com a etapa do Integra?">
                 <label><input type="radio" name="in-confirma" id="in-confirma-sim" data-inp="confirma" value="sim" ${inp.confirma === 'sim' ? 'checked' : ''}><span>Sim, o aluno está nessa etapa</span></label>
