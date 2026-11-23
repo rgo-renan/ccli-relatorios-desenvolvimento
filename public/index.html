@@ -1078,7 +1078,7 @@ Responda SOMENTE com um JSON válido neste formato:
     const ac = T.acelera || {};
     const acTem = !!((ac.texto || '').trim() || (ac.itens || []).length);
     let acel = '';
-    if (acTem) acel = `<div class="acel" id="rp-acel"><div class="eb">O que acelera a chegada</div>${ac.titulo ? `<h4>${esc(ac.titulo)}</h4>` : ''}${ac.texto ? `<p>${md(ac.texto)}</p>` : ''}<ul>${(ac.itens || []).map(x => `<li>${md(x)}</li>`).join('')}</ul></div>`;
+    if (acTem) acel = `<div class="acel" id="rp-acel"><div class="eb">O que acelera a chegada</div>${ac.texto ? `<p>${md(ac.texto)}</p>` : ''}<ul>${(ac.itens || []).map(x => `<li>${md(x)}</li>`).join('')}</ul></div>`;
     else if (opt.preview) acel = `<div class="acel" id="rp-acel"><div class="eb">O que acelera a chegada</div><p class="ph">Aqui entram o texto e as combinações combinadas com ${voc ? 'você' : A.art + ' ' + esc(n)}. Preencha no painel ao lado.</p></div>`;
     const pn = T.proximo_nivel && c.proxNivel ? `<div class="dark"><div class="eb">Ao chegar no ${c.proxNivel}, na prática</div><h3>${esc(T.proximo_nivel.titulo)}</h3><p>${md(T.proximo_nivel.intro)}</p><ul>${(T.proximo_nivel.beneficios || []).map(x => `<li>${md(x)}</li>`).join('')}</ul>${c.proxEtapas.length ? `<div class="tm"><small>Alguns temas do ${c.proxNivel}</small><div class="chips">${c.proxEtapas.filter(s => s.name).slice(0, 5).map(s => `<span>${esc(s.name)}</span>`).join('')}</div></div>` : ''}</div>` : '';
     const contato = `Qualquer dúvida, é só chamar ${c.cg.art} ${esc(consF)} ou a equipe CCLi.`;
@@ -1482,33 +1482,40 @@ if (typeof module !== 'undefined') module.exports = REP;
     const op = k => S.ed.open.has(k) ? 'open' : '';
     const au = c.cg.autor;
     const quem = c.voce ? 'o aluno' : `${c.g.art} ${esc(c.nome1)}`;
+    const nm = c.nome1, ele = c.g.ele, prox = c.proxNivel ? ` até o ${c.proxNivel}` : '';
+    const phFala = c.voce
+      ? `Ex.: Mesmo com uma rotina corrida, você tem feito questão de estar nas aulas, e isso faz toda a diferença na sua jornada. Hoje você se expressa com muito mais segurança e já usa no dia a dia o que trabalhamos juntos. Esse compromisso é o que sustenta a sua evolução.`
+      : `Ex.: Mesmo com uma rotina corrida, ${c.g.art} ${nm} tem feito questão de estar nas aulas, e isso faz toda a diferença na jornada ${c.g.dele}. Hoje ${ele} se expressa com muito mais segurança e já usa no dia a dia o que trabalhamos em aula. Esse compromisso é o que sustenta a evolução ${c.g.dele}.`;
+    const phTexto = c.voce
+      ? `Ex.: Vamos tentar alcançar 75% de frequência no próximo trimestre? Com essa constância, o caminho${prox} fica muito mais rápido. Para isso, combinamos:`
+      : `Ex.: Vamos buscar 75% de frequência ${c.g.da} ${nm} no próximo trimestre? Com essa constância, o caminho${prox} fica muito mais rápido. Para isso, combinamos:`;
+    const phItens = `Ex.: Reservar na agenda o horário fixo das aulas, como um compromisso que não se desmarca\nAvisar com pelo menos 24 horas de antecedência quando precisar faltar, para a aula ser reagendada`;
     return `<div class="panel req" id="req-panel"><h3>2. Para o consultor preencher <span class="count" id="req-count"></span></h3>
       <p class="hint" style="margin-top:-4px">Estes três campos são escritos pelo consultor e aparecem no relatório que ${c.voce ? 'o aluno recebe' : c.inp.audiencia === 'rh' ? 'a empresa recebe' : 'a família recebe'}. Sem eles, o download fica bloqueado.</p>
       <div class="rq">
         <div class="rq-h"><b>Sua fala sobre ${quem}</b><span class="st no" data-st="olhar.citacoes">Obrigatório</span></div>
         <p class="hint">Uma ou duas frases suas, como você diria ${c.voce ? 'ao próprio aluno' : c.inp.audiencia === 'rh' ? 'ao RH' : 'à família'}: o que você vê de evolução e do que se orgulha nele(a).</p>
-        <textarea id="tx-olhar.citacoes" data-tx="olhar.citacoes" rows="3" placeholder="Ex.: A ${esc(c.nome1)} chega sempre com curiosidade e hoje já conta histórias inteiras em inglês, com começo, meio e fim.">${esc((T.olhar?.citacoes || []).join('\n'))}</textarea>
+        <textarea id="tx-olhar.citacoes" data-tx="olhar.citacoes" rows="6" placeholder="${esc(phFala)}">${esc((T.olhar?.citacoes || []).join('\n'))}</textarea>
         <div class="where">Aparece na página 3, entre aspas, assinada por ${esc(au.nome)}. <button type="button" data-act="ver" data-target="rp-olhar">Ver na prévia</button></div>
       </div>
       <div class="rq">
         <div class="rq-h"><b>O que acelera a chegada</b></div>
         <p class="hint">É um quadro só, em duas partes: um texto de abertura e, logo abaixo dele, a lista de combinações que colocam esse texto em prática.</p>
         <div class="mock" aria-hidden="true">
-          <div class="mk-t">${esc(T.acelera?.titulo || 'O que acelera a chegada')}</div>
+          <div class="mk-t">O que acelera a chegada</div>
           <div class="mk-p"><span class="stepn">1</span>Texto de abertura: o que faria ${quem} avançar mais rápido agora…</div>
           <div class="mk-l"><span class="stepn">2</span><span>→ Primeira combinação<br>→ Segunda combinação</span></div>
         </div>
         <div class="rqsub">
           <div class="rq-h"><span class="lbl"><span class="stepn">1</span><b>Texto de abertura</b></span><span class="st no" data-st="acelera.texto">Obrigatório</span></div>
           <p class="hint">Em 1 ou 2 frases, o que faria ${quem} avançar mais rápido agora. Tom de parceria, sem cobrança. Termine apresentando as combinações.</p>
-          <textarea id="tx-acelera.texto" data-tx="acelera.texto" rows="3" placeholder="Ex.: Nesta fase, a regularidade é o que mais acelera o avanço. Duas combinações ajudam muito:">${esc(T.acelera?.texto || '')}</textarea>
+          <textarea id="tx-acelera.texto" data-tx="acelera.texto" rows="4" placeholder="${esc(phTexto)}">${esc(T.acelera?.texto || '')}</textarea>
         </div>
         <div class="rqsub rqsub2">
           <div class="rq-h"><span class="lbl"><span class="stepn">2</span><b>Combinações do texto acima</b></span><span class="st no" data-st="acelera.itens">Obrigatório</span></div>
           <p class="hint">As ações práticas que completam o texto de abertura, combinadas com ${c.voce ? 'o aluno' : c.inp.audiencia === 'rh' ? 'o aluno e a empresa' : 'a família'}. Escreva duas, uma por linha: cada linha vira um item com seta logo abaixo do texto.</p>
-          <textarea id="tx-acelera.itens" data-tx="acelera.itens" rows="3" placeholder="Ex.: Avisar ${esc(R.first(au.nome))} assim que surgir um imprevisto, para a aula ser reagendada&#10;Reservar 15 minutos por semana para a prática entre as aulas">${esc((T.acelera?.itens || []).join('\n'))}</textarea>
+          <textarea id="tx-acelera.itens" data-tx="acelera.itens" rows="5" placeholder="${esc(phItens)}">${esc((T.acelera?.itens || []).join('\n'))}</textarea>
         </div>
-        <div class="txf"><label for="tx-acelera.titulo">Título do quadro (pode manter)</label><input type="text" id="tx-acelera.titulo" data-tx="acelera.titulo" value="${esc(T.acelera?.titulo || '')}"></div>
         <div class="where">Aparece na página 4, no quadro laranja "O que acelera a chegada". <button type="button" data-act="ver" data-target="rp-acel">Ver na prévia</button></div>
       </div>
     </div>
